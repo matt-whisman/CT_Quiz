@@ -28,9 +28,9 @@ formEL.addEventListener("submit", (event) => {
   let formAnswers = Object.fromEntries(formData);
   // view the formAnswers object for debugging
   for (var key in formAnswers) {
-    console.log(formAnswers[key]);
+    // console.log(formAnswers[key]);
   }
-  let gradedKey = grade(formData, formAnswers);
+  let gradedKey = grade(formAnswers);
   displayResults(gradedKey);
 });
 
@@ -80,10 +80,11 @@ function grade(formAnswers) {
     q8: ["a8", false],
     q9: ["a9", false],
     q10: ["a10", false],
-    score: 0,
+    score: -1,
   };
 
   for (const key in gradedKey) {
+    console.log(key);
     if (Object.hasOwnProperty.call(gradedKey, key)) {
       const element = gradedKey[key];
       console.log(element[0] + ": " + element[1]);
@@ -100,31 +101,36 @@ function grade(formAnswers) {
 
 function displayResults(gradedKey) {
   cardHTML = "";
+  let i = 0;
 
   for (const key in gradedKey) {
-    let i = 0;
-    // get the question number
-    let qNum = i + 1;
+    console.log(key);
+    if (key != "score") {
+      // get the question number
+      let qNum = i + 1;
 
-    // get the question from questions
-    let question = questions[i];
-    let bgClass = "light";
-    // get the bg class to display red or green
-    if (gradedKey[key][1] === true) {
-      bgClass = "success";
-    } else {
-      bgClass = "danger";
+      // get the question from questions
+      let question = questions[i];
+      let bgClass = "light";
+      // get the bg class to display red or green
+      if (gradedKey[key][1] === true) {
+        bgClass = "success";
+      } else {
+        bgClass = "danger";
+      }
+
+      cardHTML += `
+          <div class="card my-3 bg-${bgClass}" id="c${qNum}">
+              <div class="card-body">
+                  <h4 class="card-title">Question ${qNum}</h4>
+                  <label for="q${qNum}" class="form-label">${question}</label>
+                  <input type="text" class="form-control" name="q${qNum}" id="q${qNum}">
+              </div>
+          </div>
+      `;
+
+      i += 1;
     }
-
-    cardHTML += `
-        <div class="card my-3 bg-${bgClass}" id="c${qNum}">
-            <div class="card-body">
-                <h4 class="card-title">Question ${qNum}</h4>
-                <label for="q${qNum}" class="form-label">${question}</label>
-                <input type="text" class="form-control" name="q${qNum}" id="q${qNum}">
-            </div>
-        </div>
-    `;
   }
 
   formEL.innerHTML = cardHTML;
